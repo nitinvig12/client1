@@ -15,8 +15,8 @@ const playfair = Playfair_Display({
 })
 
 export const metadata: Metadata = {
-  title: 'Client1',
-  description: 'Your workspace',
+  title: 'Lit Up — Find Trusted Spiritual Practitioners',
+  description: 'Connect with vetted lightworkers, healers, and spiritual guides — or grow your practice through trusted referrals.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
