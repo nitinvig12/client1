@@ -66,24 +66,47 @@ export default function SignUpPage() {
             <div>
               <p className="text-sm font-medium text-gray-700 mb-2">I am joining as…</p>
               <div className="grid grid-cols-2 gap-3">
-                {([
-                  { value: 'seeker', emoji: '🌿', label: 'A Seeker', desc: 'Find my healer' },
-                  { value: 'practitioner', emoji: '✨', label: 'A Practitioner', desc: 'Grow my practice' },
-                ] as { value: Role; emoji: string; label: string; desc: string }[]).map(({ value, emoji, label, desc }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setRole(value)}
-                    className={`p-3.5 rounded-brand border-2 text-left transition-all duration-[150ms] ease-out
-                      ${role === value
-                        ? 'border-brand-primary bg-purple-50'
-                        : 'border-gray-200 hover:border-gray-300 bg-white'}`}
-                  >
-                    <span className="text-xl block mb-1">{emoji}</span>
-                    <span className="text-xs font-semibold text-gray-900 block">{label}</span>
-                    <span className="text-xs text-gray-400">{desc}</span>
-                  </button>
-                ))}
+
+                {/* Seeker */}
+                <button
+                  type="button"
+                  onClick={() => setRole('seeker')}
+                  className={`p-3.5 rounded-brand border-2 text-left transition-all duration-[150ms] ease-out
+                    ${role === 'seeker'
+                      ? 'border-brand-primary bg-purple-50'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'}`}
+                >
+                  <span className={`block mb-2 ${role === 'seeker' ? 'text-brand-primary' : 'text-gray-400'}`}>
+                    {/* Compass — seeking, finding direction */}
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" stroke="none" opacity="0.4"/>
+                      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+                    </svg>
+                  </span>
+                  <span className="text-xs font-semibold text-gray-900 block">A Seeker</span>
+                  <span className="text-xs text-gray-400">Find my healer</span>
+                </button>
+
+                {/* Practitioner */}
+                <button
+                  type="button"
+                  onClick={() => setRole('practitioner')}
+                  className={`p-3.5 rounded-brand border-2 text-left transition-all duration-[150ms] ease-out
+                    ${role === 'practitioner'
+                      ? 'border-brand-primary bg-purple-50'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'}`}
+                >
+                  <span className={`block mb-2 ${role === 'practitioner' ? 'text-brand-primary' : 'text-gray-400'}`}>
+                    {/* Sparkle star — illumination, lit up */}
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3z"/>
+                    </svg>
+                  </span>
+                  <span className="text-xs font-semibold text-gray-900 block">A Practitioner</span>
+                  <span className="text-xs text-gray-400">Grow my practice</span>
+                </button>
+
               </div>
               {!role && (
                 <p className="text-xs text-gray-400 mt-1.5">Please select a role to continue.</p>
