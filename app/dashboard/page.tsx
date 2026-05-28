@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 const communityStats = [
   { label: 'Vetted Practitioners', value: '240+', note: 'Across 30+ modalities', up: true },
@@ -25,6 +26,13 @@ const recentActivity = [
 export default function DashboardPage() {
   const [userName, setUserName] = useState('there')
   const [role, setRole] = useState<'seeker' | 'practitioner' | null>(null)
+  const router = useRouter()
+
+  const handleSignOut = () => {
+    sessionStorage.removeItem('userName')
+    sessionStorage.removeItem('userRole')
+    router.push('/signup')
+  }
 
   useEffect(() => {
     const stored = sessionStorage.getItem('userName')
@@ -84,6 +92,13 @@ export default function DashboardPage() {
               <div className="w-9 h-9 rounded-full gradient-brand flex items-center justify-center text-white font-semibold text-sm shadow-brand">
                 {initial}
               </div>
+              <button
+                onClick={handleSignOut}
+                className="text-sm text-gray-400 hover:text-gray-600 transition-colors duration-[150ms] ease-out ml-1"
+                title="Sign out"
+              >
+                Sign out
+              </button>
             </div>
           </div>
         </div>
