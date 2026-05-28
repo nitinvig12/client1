@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 
 type Role = 'seeker' | 'practitioner' | null
 
@@ -10,16 +9,12 @@ export default function SignUpPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
+  const [submitted, setSubmitted] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!role) return
-    setLoading(true)
-    sessionStorage.setItem('userName', name)
-    sessionStorage.setItem('userRole', role)
-    setTimeout(() => router.push('/dashboard'), 300)
+    setSubmitted(true)
   }
 
   return (
@@ -52,6 +47,19 @@ export default function SignUpPage() {
 
         {/* Card */}
         <div className="bg-white rounded-brand shadow-brand p-8">
+          {submitted ? (
+            <div className="flex flex-col items-center text-center py-4 space-y-4">
+              <div className="w-14 h-14 rounded-full gradient-brand flex items-center justify-center text-white text-2xl shadow-brand">
+                ✓
+              </div>
+              <h2 className="font-display text-2xl font-bold text-gray-900">You&rsquo;re on the list!</h2>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Thanks for joining Lit Up. We&rsquo;re putting the finishing touches on your experience —
+                we&rsquo;ll be in touch very soon. ✨
+              </p>
+            </div>
+          ) : (
+          <>
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
 
             {/* Role selector */}
@@ -138,12 +146,12 @@ export default function SignUpPage() {
 
             <button
               type="submit"
-              disabled={loading || !role}
+              disabled={!role}
               className="w-full gradient-brand text-white font-semibold py-3 rounded-brand shadow-brand text-sm
                 hover:opacity-90 active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed
                 transition-all duration-[150ms] ease-out mt-1"
             >
-              {loading ? 'Creating your account…' : 'Begin your journey'}
+              Begin your journey
             </button>
           </form>
 
@@ -153,6 +161,8 @@ export default function SignUpPage() {
               Sign in
             </a>
           </p>
+          </>
+          )}
         </div>
 
         <p className="mt-6 text-center text-xs text-gray-400">
