@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-primary: #7E5BFF;
+  --brand-accent: #FEA971;
+}
+
+@layer utilities {
+  .gradient-brand {
+    background: linear-gradient(135deg, #7E5BFF 0%, #FEA971 100%);
+  }
+
+  .text-gradient-brand {
+    background: linear-gradient(135deg, #7E5BFF 0%, #FEA971 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
