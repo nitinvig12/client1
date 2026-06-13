@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 type Role = 'seeker' | 'practitioner' | null
 type Mode = 'signup' | 'signin'
@@ -11,12 +12,16 @@ export default function SignUpPage() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [submitted, setSubmitted] = useState(false)
+  const router = useRouter()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (mode === 'signup' && !role) return
-    setSubmitted(true)
+    const resolvedName = name.trim() || email.split('@')[0]
+    const resolvedRole = role ?? 'seeker'
+    sessionStorage.setItem('userName', resolvedName)
+    sessionStorage.setItem('userRole', resolvedRole)
+    router.push(resolvedRole === 'practitioner' ? '/dashboard/practitioner' : '/dashboard/seeker')
   }
 
   return (
@@ -49,17 +54,6 @@ export default function SignUpPage() {
         {/* Card */}
         <div className="bg-white rounded-brand shadow-brand p-8">
 
-          {submitted ? (
-            <div className="flex flex-col items-center text-center py-4 space-y-4">
-              <div className="w-14 h-14 rounded-full gradient-brand flex items-center justify-center text-white text-2xl shadow-brand">✓</div>
-              <h2 className="font-display text-2xl font-bold text-gray-900">You&rsquo;re on the list!</h2>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                Thanks for joining Lit Up. We&rsquo;re putting the finishing touches on your experience —
-                we&rsquo;ll be in touch very soon. ✨
-              </p>
-            </div>
-          ) : (
-          <>
           {/* Mode tabs */}
           <div className="flex border-b border-gray-100 mb-6 -mx-8 px-8">
             {(['signup', 'signin'] as const).map(m => (
@@ -172,8 +166,6 @@ export default function SignUpPage() {
               {mode === 'signup' ? 'Begin your journey →' : 'Sign in →'}
             </button>
           </form>
-          </>
-          )}
         </div>
 
         <p className="mt-6 text-center text-xs text-gray-400">
