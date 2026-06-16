@@ -59,6 +59,8 @@ export default function Nav() {
               { href: '/explore', label: 'Explore' },
               { href: '/missions', label: 'Missions' },
               { href: '/lumi', label: 'Lumi AI ✦' },
+              { href: '/community', label: 'Community' },
+              { href: '/founders', label: 'Founders' },
             ].map(({ href, label }) => (
               <Link
                 key={href}
@@ -82,6 +84,12 @@ export default function Nav() {
                 className="text-sm text-gray-500 hover:text-brand-primary transition-colors hidden sm:block"
               >
                 Dashboard
+              </Link>
+              <Link
+                href="/referrals"
+                className="text-sm text-gray-500 hover:text-brand-primary transition-colors hidden sm:block"
+              >
+                Referrals
               </Link>
               <div className="w-8 h-8 rounded-full gradient-brand flex items-center justify-center text-white text-sm font-semibold shadow-brand">
                 {userName.charAt(0).toUpperCase()}

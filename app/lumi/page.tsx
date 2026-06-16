@@ -43,12 +43,83 @@ function getResponse(text: string): { reply: string; matches?: typeof practition
   return responses.default
 }
 
+const quizQuestions = [
+  {
+    q: 'What are you hoping to experience?',
+    options: [
+      { label: 'Calm & stress relief', tag: 'sound' },
+      { label: 'Clarity on a decision', tag: 'astrology' },
+      { label: 'Energetic healing', tag: 'reiki' },
+      { label: 'Self-discovery', tag: 'tarot' },
+    ],
+  },
+  {
+    q: 'How do you prefer to receive guidance?',
+    options: [
+      { label: 'Hands-on energy work', tag: 'reiki' },
+      { label: 'Talking & reflection', tag: 'tarot' },
+      { label: 'Movement & breath', tag: 'sound' },
+      { label: 'Card or chart-based insight', tag: 'astrology' },
+    ],
+  },
+  {
+    q: 'How soon would you like to start?',
+    options: [
+      { label: 'This week', tag: 'soon' },
+      { label: 'This month', tag: 'month' },
+      { label: 'Just exploring for now', tag: 'explore' },
+    ],
+  },
+]
+
+const tagToFilter: Record<string, (p: typeof practitioners[number]) => boolean> = {
+  reiki: p => p.modalities.some(m => m.toLowerCase().includes('reiki') || m.toLowerCase().includes('energy')),
+  sound: p => p.modalities.some(m => m.toLowerCase().includes('sound') || m.toLowerCase().includes('breath')),
+  tarot: p => p.modalities.some(m => m.toLowerCase().includes('tarot') || m.toLowerCase().includes('intuitive')),
+  astrology: p => p.modalities.some(m => m.toLowerCase().includes('astrology') || m.toLowerCase().includes('human design')),
+}
+
 export default function LumiPage() {
+  const [mode, setMode] = useState<'chat' | 'quiz'>('chat')
   const [messages, setMessages] = useState<Message[]>(starterMessages)
   const [input, setInput] = useState('')
   const [matches, setMatches] = useState<typeof practitioners | null>(null)
   const [typing, setTyping] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
+
+  const [quizStep, setQuizStep] = useState(0)
+  const [quizTags, setQuizTags] = useState<string[]>([])
+  const [quizText, setQuizText] = useState('')
+  const [quizDone, setQuizDone] = useState(false)
+
+  const answerQuiz = (tag: string) => {
+    const nextTags = [...quizTags, tag]
+    setQuizTags(nextTags)
+    if (quizStep + 1 < quizQuestions.length) {
+      setQuizStep(s => s + 1)
+    } else {
+      setQuizStep(s => s + 1)
+    }
+  }
+
+  const submitQuizText = () => {
+    const topTag = quizTags.reduce<Record<string, number>>((acc, t) => ({ ...acc, [t]: (acc[t] ?? 0) + 1 }), {})
+    const best = Object.entries(topTag).sort((a, b) => b[1] - a[1])[0]?.[0]
+    const filterFn = best && tagToFilter[best] ? tagToFilter[best] : null
+    const results = (filterFn ? practitioners.filter(filterFn) : practitioners)
+      .slice()
+      .sort((a, b) => b.litScore - a.litScore)
+      .slice(0, 3)
+    setMatches(results)
+    setQuizDone(true)
+  }
+
+  const resetQuiz = () => {
+    setQuizStep(0)
+    setQuizTags([])
+    setQuizText('')
+    setQuizDone(false)
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -85,12 +156,77 @@ export default function LumiPage() {
               <p className="font-display font-bold text-white text-lg">Lumi AI</p>
               <p className="text-white/70 text-xs">300+ modalities · Always here for you</p>
             </div>
-            <div className="ml-auto flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-green-300 animate-pulse" />
-              <span className="text-white/70 text-xs">Active</span>
+            <div className="ml-auto flex items-center gap-2">
+              <button
+                onClick={() => setMode('chat')}
+                className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-[150ms] ${mode === 'chat' ? 'bg-white text-brand-primary' : 'text-white/70 hover:text-white'}`}
+              >
+                Free Chat
+              </button>
+              <button
+                onClick={() => setMode('quiz')}
+                className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all duration-[150ms] ${mode === 'quiz' ? 'bg-white text-brand-primary' : 'text-white/70 hover:text-white'}`}
+              >
+                Guided Quiz
+              </button>
             </div>
           </div>
 
+          {mode === 'quiz' ? (
+            <div className="flex-1 overflow-y-auto p-6" style={{ maxHeight: '480px', minHeight: '480px' }}>
+              {!quizDone ? (
+                <>
+                  <p className="text-xs text-gray-400 mb-1">Question {Math.min(quizStep + 1, quizQuestions.length)} of {quizQuestions.length + 1}</p>
+                  <div className="w-full bg-gray-100 rounded-full h-1.5 mb-6">
+                    <div className="gradient-brand h-1.5 rounded-full transition-all duration-[150ms]" style={{ width: `${(Math.min(quizStep, quizQuestions.length) / (quizQuestions.length)) * 100}%` }} />
+                  </div>
+
+                  {quizStep < quizQuestions.length ? (
+                    <div>
+                      <h2 className="font-display text-xl font-bold text-gray-900 mb-5">{quizQuestions[quizStep].q}</h2>
+                      <div className="space-y-2.5">
+                        {quizQuestions[quizStep].options.map(opt => (
+                          <button
+                            key={opt.label}
+                            onClick={() => answerQuiz(opt.tag)}
+                            className="w-full text-left p-4 rounded-brand border border-gray-200 text-sm text-gray-700 hover:border-brand-primary hover:bg-purple-50 transition-all duration-[150ms]"
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <h2 className="font-display text-xl font-bold text-gray-900 mb-2">Anything else Lumi should know?</h2>
+                      <p className="text-xs text-gray-400 mb-4">Optional — share more context for sharper matches.</p>
+                      <textarea
+                        value={quizText}
+                        onChange={e => setQuizText(e.target.value)}
+                        rows={4}
+                        placeholder="e.g. I've been feeling anxious about a big life decision…"
+                        className="w-full border border-gray-200 rounded-brand px-4 py-3 text-sm outline-none focus:border-brand-primary resize-none mb-4"
+                      />
+                      <button
+                        onClick={submitQuizText}
+                        className="gradient-brand text-white font-semibold px-6 py-2.5 rounded-brand shadow-brand text-sm hover:opacity-90 transition-all duration-[150ms]"
+                      >
+                        Show My Matches →
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="text-center py-4">
+                  <div className="w-12 h-12 rounded-full gradient-brand flex items-center justify-center text-white text-xl mx-auto mb-3">✦</div>
+                  <h2 className="font-display text-xl font-bold text-gray-900 mb-1">Your top 3 matches are ready</h2>
+                  <p className="text-xs text-gray-400 mb-5">Check the sidebar, or restart the quiz for a different read.</p>
+                  <button onClick={resetQuiz} className="text-sm text-brand-primary hover:underline">Retake the quiz</button>
+                </div>
+              )}
+            </div>
+          ) : (
+          <>
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-5 space-y-4" style={{ maxHeight: '480px' }}>
             {messages.map((msg, i) => (
@@ -141,6 +277,8 @@ export default function LumiPage() {
               Send
             </button>
           </div>
+          </>
+          )}
         </div>
 
         {/* Matches sidebar */}

@@ -4,6 +4,7 @@ import { useState, use } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Nav from '@/components/Nav'
+import FounderBadge from '@/components/FounderBadge'
 import { practitioners, testimonials } from '@/lib/mockData'
 
 const availability = [
@@ -30,7 +31,9 @@ export default function PractitionerProfile({ params }: { params: Promise<{ id: 
 
   const [tab, setTab] = useState<'overview' | 'testimonials' | 'availability'>('overview')
   const [showScoreTooltip, setShowScoreTooltip] = useState(false)
+  const [introWatched, setIntroWatched] = useState(false)
   const reviews = testimonials.filter(t => t.practitionerId === p.id)
+  const bookingLocked = !!p.introVideoUrl && !introWatched
 
   return (
     <div className="min-h-screen bg-gray-50 font-body">
@@ -52,6 +55,10 @@ export default function PractitionerProfile({ params }: { params: Promise<{ id: 
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" /></svg>
                     Verified
                   </span>
+                )}
+                {p.founder && <FounderBadge />}
+                {p.fsaEligible && (
+                  <span className="bg-white/20 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full">FSA Eligible</span>
                 )}
               </div>
               <p className="text-white/80 text-sm">{p.modality} · {p.location}</p>
@@ -85,6 +92,27 @@ export default function PractitionerProfile({ params }: { params: Promise<{ id: 
               Why this score?
             </button>
           </div>
+
+          {/* Intro video */}
+          {p.introVideoUrl && (
+            <div className="bg-white rounded-brand shadow-brand border border-gray-100 p-5 mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-semibold text-gray-900">5-min Intro Video</p>
+                {!introWatched && <span className="text-xs text-amber-600 font-medium">Watch to unlock booking</span>}
+                {introWatched && <span className="text-xs text-green-600 font-medium">✓ Watched</span>}
+              </div>
+              <button
+                onClick={() => setIntroWatched(true)}
+                className="w-full aspect-video rounded-brand bg-gray-900 flex items-center justify-center group relative overflow-hidden"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${p.avatarColor} opacity-30`} />
+                <span className="relative w-14 h-14 rounded-full bg-white/90 flex items-center justify-center text-gray-900 group-hover:scale-105 transition-transform duration-[150ms]">
+                  ▶
+                </span>
+              </button>
+              <p className="text-xs text-gray-400 mt-2">Required before paid booking · 720p · {p.name.split(' ')[0]}&rsquo;s introduction</p>
+            </div>
+          )}
 
           {showScoreTooltip && (
             <div className="bg-white rounded-brand shadow-brand border border-gray-100 p-5 mb-6">
@@ -224,12 +252,21 @@ export default function PractitionerProfile({ params }: { params: Promise<{ id: 
               ))}
             </div>
 
-            <Link
-              href={`/book?practitioner=${p.id}`}
-              className="block w-full gradient-brand text-white font-semibold py-3 rounded-brand shadow-brand text-center hover:opacity-90 transition-all duration-[150ms] mb-3"
-            >
-              Book a Session
-            </Link>
+            {bookingLocked ? (
+              <button
+                disabled
+                className="block w-full bg-gray-100 text-gray-400 font-semibold py-3 rounded-brand text-center cursor-not-allowed mb-3"
+              >
+                Watch intro video to unlock
+              </button>
+            ) : (
+              <Link
+                href={`/book?practitioner=${p.id}`}
+                className="block w-full gradient-brand text-white font-semibold py-3 rounded-brand shadow-brand text-center hover:opacity-90 transition-all duration-[150ms] mb-3"
+              >
+                Book a Session
+              </Link>
+            )}
 
             <Link
               href={`/book?practitioner=${p.id}&vibe=true`}
