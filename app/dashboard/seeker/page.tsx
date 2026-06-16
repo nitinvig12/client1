@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
-import { practitioners, missions } from '@/lib/mockData'
+import FounderBadge from '@/components/FounderBadge'
+import { practitioners, missions, currentUser } from '@/lib/mockData'
 
 const upcomingSessions = [
   { id: '1', practitioner: 'Aria Moonstone', modality: 'Reiki', date: 'Mon 18 Nov', time: '10:00 AM', type: '60 min', avatarColor: 'from-violet-400 to-purple-600' },
@@ -122,6 +123,25 @@ export default function SeekerDashboard() {
 
           {/* Right sidebar */}
           <div className="space-y-5">
+            {/* Founder status */}
+            {currentUser.founder && (
+              <div className="bg-white rounded-brand shadow-brand border border-gray-100 p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-display font-bold text-gray-900">Founder Status</h3>
+                  <FounderBadge />
+                </div>
+                <p className="text-xs text-gray-400 mb-3">Founding Member #{currentUser.founderNumber} · ×1.5 karma multiplier active</p>
+                <div className="flex gap-2">
+                  <Link href="/founders" className="flex-1 text-center text-xs border border-brand-primary text-brand-primary font-semibold py-2 rounded-brand hover:bg-purple-50 transition-colors">
+                    Wall of Light
+                  </Link>
+                  <Link href="/referrals" className="flex-1 text-center text-xs gradient-brand text-white font-semibold py-2 rounded-brand hover:opacity-90 transition-opacity">
+                    Referrals
+                  </Link>
+                </div>
+              </div>
+            )}
+
             {/* Active missions */}
             <div className="bg-white rounded-brand shadow-brand border border-gray-100 p-5">
               <div className="flex items-center justify-between mb-4">

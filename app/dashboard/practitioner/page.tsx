@@ -3,6 +3,10 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
+import FounderBadge from '@/components/FounderBadge'
+import { practitioners } from '@/lib/mockData'
+
+const me = practitioners[0]
 
 const earningsData = [
   { month: 'Aug', amount: 1240 },
@@ -148,6 +152,43 @@ export default function PractitionerDashboard() {
 
           {/* Right sidebar */}
           <div className="space-y-5">
+            {/* Founder status */}
+            {me.founder && (
+              <div className="bg-white rounded-brand shadow-brand border border-gray-100 p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-display font-bold text-gray-900">Founder Status</h3>
+                  <FounderBadge />
+                </div>
+                <p className="text-xs text-gray-400 mb-3">Founding 111 member · Reduced commission tier active</p>
+                <div className="flex gap-2">
+                  <Link href="/founders" className="flex-1 text-center text-xs border border-brand-primary text-brand-primary font-semibold py-2 rounded-brand hover:bg-purple-50 transition-colors">
+                    Wall of Light
+                  </Link>
+                  <Link href="/referrals" className="flex-1 text-center text-xs gradient-brand text-white font-semibold py-2 rounded-brand hover:opacity-90 transition-opacity">
+                    Referrals
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* W-9 status */}
+            <div className="bg-white rounded-brand shadow-brand border border-gray-100 p-5">
+              <h3 className="font-display font-bold text-gray-900 mb-1">W-9 & Tax Status</h3>
+              <p className="text-xs text-gray-400 mb-3">Required to receive payouts.</p>
+              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                me.w9Status === 'complete' ? 'bg-green-50 text-green-700' :
+                me.w9Status === 'partial' ? 'bg-amber-50 text-amber-700' :
+                'bg-rose-50 text-rose-700'
+              }`}>
+                {me.w9Status === 'complete' ? '✓ Complete' : me.w9Status === 'partial' ? '⚠ Partial — EIN flagged for review' : '✗ Not submitted'}
+              </span>
+              {me.w9Status !== 'complete' && (
+                <button className="mt-3 block w-full text-xs border border-brand-primary text-brand-primary font-semibold py-2 rounded-brand hover:bg-purple-50 transition-colors">
+                  Upload W-9 →
+                </button>
+              )}
+            </div>
+
             {/* Profile health */}
             <div className="bg-white rounded-brand shadow-brand border border-gray-100 p-5">
               <h3 className="font-display font-bold text-gray-900 mb-1">Profile Health</h3>
