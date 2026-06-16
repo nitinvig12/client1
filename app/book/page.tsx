@@ -18,6 +18,10 @@ export default function BookPage() {
   const [step, setStep] = useState(1)
   const [sessionType, setSessionType] = useState(sessionTypes[1])
   const [slot, setSlot] = useState('')
+  const [showRating, setShowRating] = useState(false)
+  const [rating, setRating] = useState(0)
+  const [wouldBook, setWouldBook] = useState<boolean | null>(null)
+  const [ratingSubmitted, setRatingSubmitted] = useState(false)
   const p = practitioners[0]
 
   return (
@@ -181,13 +185,68 @@ export default function BookPage() {
             <p className="text-xs text-gray-400 mb-8">
               A confirmation has been added to your calendar. You&rsquo;ll receive a reminder 24 hours before your session. {sessionType.price > 0 && 'Refund policy: full refund if cancelled 24hrs in advance.'}
             </p>
-            <div className="flex gap-3 justify-center">
+            <div className="flex gap-3 justify-center mb-4">
               <Link href="/dashboard/seeker" className="gradient-brand text-white font-semibold px-6 py-3 rounded-brand shadow-brand hover:opacity-90 transition-all duration-[150ms] text-sm">
                 Go to Dashboard
               </Link>
               <Link href="/explore" className="border border-gray-200 text-gray-600 font-medium px-6 py-3 rounded-brand hover:border-gray-300 transition-all text-sm">
                 Explore More
               </Link>
+            </div>
+            <button onClick={() => setShowRating(true)} className="text-xs text-gray-400 hover:text-brand-primary transition-colors underline">
+              Preview: rate this session after it ends
+            </button>
+          </div>
+        )}
+
+        {/* Two-way rating modal */}
+        {showRating && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4" onClick={() => setShowRating(false)}>
+            <div className="bg-white rounded-brand shadow-brand p-7 w-full max-w-sm" onClick={e => e.stopPropagation()}>
+              {!ratingSubmitted ? (
+                <>
+                  <h3 className="font-display text-xl font-bold text-gray-900 mb-1">Rate your session</h3>
+                  <p className="text-xs text-gray-400 mb-5">With {p.name} · Your rating stays blind until {p.name.split(' ')[0]} rates you too, or 24 hours pass.</p>
+                  <div className="flex justify-center gap-1.5 mb-5">
+                    {[1, 2, 3, 4, 5].map(n => (
+                      <button key={n} onClick={() => setRating(n)} className={`text-3xl transition-colors ${n <= rating ? 'text-amber-400' : 'text-gray-200'}`}>★</button>
+                    ))}
+                  </div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">Would you book again?</p>
+                  <div className="flex gap-2 mb-5">
+                    {[true, false].map(v => (
+                      <button
+                        key={String(v)}
+                        onClick={() => setWouldBook(v)}
+                        className={`flex-1 text-sm py-2 rounded-brand border-2 transition-all duration-[150ms] ${
+                          wouldBook === v ? 'border-brand-primary bg-purple-50 text-brand-primary' : 'border-gray-200 text-gray-500'
+                        }`}
+                      >
+                        {v ? 'Yes' : 'No'}
+                      </button>
+                    ))}
+                  </div>
+                  <textarea
+                    rows={2}
+                    placeholder="Optional comment…"
+                    className="w-full border border-gray-200 rounded-brand px-3 py-2 text-sm outline-none focus:border-brand-primary resize-none mb-4"
+                  />
+                  <button
+                    disabled={!rating || wouldBook === null}
+                    onClick={() => setRatingSubmitted(true)}
+                    className="w-full gradient-brand text-white font-semibold py-2.5 rounded-brand shadow-brand text-sm hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-[150ms]"
+                  >
+                    Submit Rating (+10 Karma)
+                  </button>
+                </>
+              ) : (
+                <div className="text-center py-3">
+                  <div className="w-12 h-12 rounded-full gradient-brand flex items-center justify-center text-white text-xl mx-auto mb-3">✓</div>
+                  <h3 className="font-display text-lg font-bold text-gray-900 mb-1">Rating submitted</h3>
+                  <p className="text-xs text-gray-400 mb-5">+10 Karma added. You&rsquo;ll see {p.name.split(' ')[0]}&rsquo;s rating of you once both sides have rated, or in 24 hours.</p>
+                  <button onClick={() => setShowRating(false)} className="text-sm text-brand-primary hover:underline">Close</button>
+                </div>
+              )}
             </div>
           </div>
         )}
