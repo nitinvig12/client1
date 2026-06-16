@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Nav from '@/components/Nav'
+import FounderBadge from '@/components/FounderBadge'
 import { practitioners } from '@/lib/mockData'
 
 const modalities = ['All', 'Reiki', 'Sound Healing', 'Human Design', 'Tarot', 'Somatic', 'Astrology', 'Akashic Records', 'Kundalini']
@@ -15,10 +16,12 @@ export default function ExplorePage() {
   const [minLitScore, setMinLitScore] = useState(0)
   const [sortBy, setSortBy] = useState('Relevance')
   const [verifiedOnly, setVerifiedOnly] = useState(false)
+  const [fsaOnly, setFsaOnly] = useState(false)
 
   const filtered = practitioners
     .filter((p) => {
       if (verifiedOnly && !p.verified) return false
+      if (fsaOnly && !p.fsaEligible) return false
       if (maxPrice < 200 && p.price > maxPrice) return false
       if (minLitScore > 0 && p.litScore < minLitScore) return false
       if (selectedModality !== 'All' && !p.modalities.some(m => m.includes(selectedModality))) return false
@@ -115,8 +118,17 @@ export default function ExplorePage() {
                 <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-[150ms] ${verifiedOnly ? 'translate-x-5' : 'translate-x-0.5'}`} />
               </button>
             </div>
+            <div className="flex items-center justify-between">
+              <label className="text-sm text-gray-700 font-medium">FSA Eligible</label>
+              <button
+                onClick={() => setFsaOnly(v => !v)}
+                className={`w-10 h-5 rounded-full transition-colors duration-[150ms] relative ${fsaOnly ? 'gradient-brand' : 'bg-gray-200'}`}
+              >
+                <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-[150ms] ${fsaOnly ? 'translate-x-5' : 'translate-x-0.5'}`} />
+              </button>
+            </div>
             <button
-              onClick={() => { setSearch(''); setSelectedModality('All'); setMaxPrice(200); setMinLitScore(0); setVerifiedOnly(false) }}
+              onClick={() => { setSearch(''); setSelectedModality('All'); setMaxPrice(200); setMinLitScore(0); setVerifiedOnly(false); setFsaOnly(false) }}
               className="text-xs text-gray-400 hover:text-brand-primary transition-colors"
             >
               Reset all filters
@@ -149,7 +161,10 @@ export default function ExplorePage() {
                   <div className="p-5">
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="font-semibold text-gray-900 text-sm">{p.name}</p>
+                        <div className="flex items-center gap-1.5">
+                          <p className="font-semibold text-gray-900 text-sm">{p.name}</p>
+                          {p.founder && <FounderBadge />}
+                        </div>
                         <p className="text-xs text-gray-400 mt-0.5">{p.modality}</p>
                       </div>
                       {p.verified && (
@@ -162,6 +177,9 @@ export default function ExplorePage() {
                       {p.modalities.slice(0, 2).map(m => (
                         <span key={m} className="text-xs bg-purple-50 text-brand-primary px-2 py-0.5 rounded-full">{m}</span>
                       ))}
+                      {p.fsaEligible && (
+                        <span className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full">FSA Eligible</span>
+                      )}
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
