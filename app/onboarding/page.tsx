@@ -229,6 +229,22 @@ export default function OnboardingPage() {
                   <p className="text-xs text-gray-400 mt-1">PDF, JPG, PNG · Max 10MB each</p>
                 </div>
               </div>
+              <div className="border-t border-gray-100 pt-5">
+                <p className="text-sm font-semibold text-gray-900 mb-1">W-9 / Tax form <span className="text-rose-500">*</span></p>
+                <p className="text-xs text-gray-400 mb-3">Required to receive payouts. A partial EIN is accepted but will be flagged for follow-up.</p>
+                <div className="border-2 border-dashed border-gray-200 rounded-brand p-6 text-center hover:border-brand-primary/40 transition-colors cursor-pointer">
+                  <p className="text-2xl mb-1">🧾</p>
+                  <p className="text-sm text-gray-500">Upload W-9 or <span className="text-brand-primary font-medium">enter EIN manually</span></p>
+                </div>
+              </div>
+              <div className="border-t border-gray-100 pt-5">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input type="checkbox" className="accent-brand-primary mt-0.5" />
+                  <span className="text-sm text-gray-700">
+                    I have read and agree to the <span className="text-brand-primary font-medium">Lit Up Code of Ethics</span>, including informed consent, scope-of-practice honesty, and client safety standards.
+                  </span>
+                </label>
+              </div>
             </div>
 
             {/* Profile preview card */}
